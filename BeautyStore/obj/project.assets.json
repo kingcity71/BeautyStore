@@ -2691,6 +2691,32 @@
           "lib/netstandard1.3/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "BeautyStore.DAL/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "BeautyStore.Entities": "1.0.0",
+          "BeautyStore.Interfaces": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "3.1.9",
+          "Microsoft.EntityFrameworkCore.SqlServer": "3.1.9"
+        },
+        "compile": {
+          "bin/placeholder/BeautyStore.DAL.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BeautyStore.DAL.dll": {}
+        }
+      },
+      "BeautyStore.Entities/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "compile": {
+          "bin/placeholder/BeautyStore.Entities.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BeautyStore.Entities.dll": {}
+        }
+      },
       "BeautyStore.Identity/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
@@ -2703,6 +2729,16 @@
         },
         "runtime": {
           "bin/placeholder/BeautyStore.Identity.dll": {}
+        }
+      },
+      "BeautyStore.Interfaces/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "compile": {
+          "bin/placeholder/BeautyStore.Interfaces.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BeautyStore.Interfaces.dll": {}
         }
       }
     }
@@ -8757,14 +8793,30 @@
         "system.xml.xmlserializer.nuspec"
       ]
     },
+    "BeautyStore.DAL/1.0.0": {
+      "type": "project",
+      "path": "../BeautyStore.DAL/BeautyStore.DAL.csproj",
+      "msbuildProject": "../BeautyStore.DAL/BeautyStore.DAL.csproj"
+    },
+    "BeautyStore.Entities/1.0.0": {
+      "type": "project",
+      "path": "../BeautyStore.Entities/BeautyStore.Entities.csproj",
+      "msbuildProject": "../BeautyStore.Entities/BeautyStore.Entities.csproj"
+    },
     "BeautyStore.Identity/1.0.0": {
       "type": "project",
       "path": "../BeautyStore.Identity/BeautyStore.Identity.csproj",
       "msbuildProject": "../BeautyStore.Identity/BeautyStore.Identity.csproj"
+    },
+    "BeautyStore.Interfaces/1.0.0": {
+      "type": "project",
+      "path": "../BeautyStore.Interfaces/BeautyStore.Interfaces.csproj",
+      "msbuildProject": "../BeautyStore.Interfaces/BeautyStore.Interfaces.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
+      "BeautyStore.DAL >= 1.0.0",
       "BeautyStore.Identity >= 1.0.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 3.1.9",
       "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation >= 3.1.9",
@@ -8801,6 +8853,9 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
+            "C:\\Users\\dimad\\Desktop\\BeautyStore\\BeautyStore.DAL\\BeautyStore.DAL.csproj": {
+              "projectPath": "C:\\Users\\dimad\\Desktop\\BeautyStore\\BeautyStore.DAL\\BeautyStore.DAL.csproj"
+            },
             "C:\\Users\\dimad\\Desktop\\BeautyStore\\BeautyStore.Identity\\BeautyStore.Identity.csproj": {
               "projectPath": "C:\\Users\\dimad\\Desktop\\BeautyStore\\BeautyStore.Identity\\BeautyStore.Identity.csproj"
             }
@@ -8867,7 +8922,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.102\\RuntimeIdentifierGraph.json"
       }
     }
   }
