@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using BeautyStore.Models;
+using BeautyStore.App.Models;
 
-namespace BeautyStore.Controllers
+namespace BeautyStore.App.Controllers
 {
     public class HomeController : Controller
     {

@@ -3,15 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautyStore", "BeautyStore\BeautyStore.csproj", "{175C265D-7812-4E98-9A80-3682ACD42319}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautyStore.App", "BeautyStore\BeautyStore.App.csproj", "{175C265D-7812-4E98-9A80-3682ACD42319}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautyStore.Identity", "BeautyStore.Identity\BeautyStore.Identity.csproj", "{412735E9-C992-497E-A2DA-8526AD278446}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautyStore.Identity", "BeautyStore.Identity\BeautyStore.Identity.csproj", "{412735E9-C992-497E-A2DA-8526AD278446}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautyStore.Entities", "BeautyStore.Entities\BeautyStore.Entities.csproj", "{92D7493A-7DC0-4433-AE41-EAEC9B09C6DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautyStore.Entities", "BeautyStore.Entities\BeautyStore.Entities.csproj", "{92D7493A-7DC0-4433-AE41-EAEC9B09C6DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautyStore.DAL", "BeautyStore.DAL\BeautyStore.DAL.csproj", "{8F863FE6-6ABF-491C-A715-3A4D283518F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautyStore.DAL", "BeautyStore.DAL\BeautyStore.DAL.csproj", "{8F863FE6-6ABF-491C-A715-3A4D283518F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautyStore.Interfaces", "BeautyStore.Interfaces\BeautyStore.Interfaces.csproj", "{B1D36EAB-B901-4C8F-9291-0C4164866783}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautyStore.Interfaces", "BeautyStore.Interfaces\BeautyStore.Interfaces.csproj", "{B1D36EAB-B901-4C8F-9291-0C4164866783}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautyStore.BLL", "BeautyStore.BLL\BeautyStore.BLL.csproj", "{DF828853-9261-4C2D-B1D5-280AE11CBB0F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautyStore.Models", "BeautyStore.Models\BeautyStore.Models.csproj", "{3F9E6094-195B-4141-BE31-F6CA10DB2639}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{F03C69E5-062E-4F83-B4E2-DB488402B40A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{B1D36EAB-B901-4C8F-9291-0C4164866783}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1D36EAB-B901-4C8F-9291-0C4164866783}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1D36EAB-B901-4C8F-9291-0C4164866783}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF828853-9261-4C2D-B1D5-280AE11CBB0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF828853-9261-4C2D-B1D5-280AE11CBB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF828853-9261-4C2D-B1D5-280AE11CBB0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF828853-9261-4C2D-B1D5-280AE11CBB0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F9E6094-195B-4141-BE31-F6CA10DB2639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F9E6094-195B-4141-BE31-F6CA10DB2639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F9E6094-195B-4141-BE31-F6CA10DB2639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F9E6094-195B-4141-BE31-F6CA10DB2639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F03C69E5-062E-4F83-B4E2-DB488402B40A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F03C69E5-062E-4F83-B4E2-DB488402B40A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F03C69E5-062E-4F83-B4E2-DB488402B40A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F03C69E5-062E-4F83-B4E2-DB488402B40A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

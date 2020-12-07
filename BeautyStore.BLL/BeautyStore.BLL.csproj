@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BeautyStore.Entities\BeautyStore.Entities.csproj" />
-    <ProjectReference Include="..\BeautyStore.Models\BeautyStore.Models.csproj" />
+    <ProjectReference Include="..\BeautyStore.Interfaces\BeautyStore.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

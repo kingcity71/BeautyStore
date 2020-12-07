@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BeautyStore.BLL\BeautyStore.BLL.csproj" />
     <ProjectReference Include="..\BeautyStore.DAL\BeautyStore.DAL.csproj" />
     <ProjectReference Include="..\BeautyStore.Identity\BeautyStore.Identity.csproj" />
   </ItemGroup>
