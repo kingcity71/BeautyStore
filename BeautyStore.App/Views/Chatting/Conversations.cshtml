@@ -1,0 +1,24 @@
+﻿@model IEnumerable<string>
+@{
+    var conversations = Model;
+    
+}
+@{
+    ViewData["Title"] = "Conversations";
+}
+@if (!conversations.Any())
+{
+    <h3>Список диалогов пуст</h3>
+    return;
+}
+
+<h1>Диалоги с пользователями</h1>
+@foreach (var conversation in conversations)
+{
+    <div>
+        <a asp-controller="Chatting" asp-action="Conversation" asp-route-interlocutorLogin="@conversation">
+            @conversation
+        </a>
+    </div>
+}
+

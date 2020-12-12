@@ -15,6 +15,7 @@ namespace BeautyStore.DAL
 
         public DbSet<Basket> Basket { get; set; }
         public DbSet<Caregory> Categories { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Store> Store { get; set; }
         public DbSet<Transaction> Transactions{ get; set; }
