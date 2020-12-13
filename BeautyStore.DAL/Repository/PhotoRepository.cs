@@ -24,7 +24,7 @@ namespace BeautyStore.DAL.Repository
             using var context = GetContext();
             var productPhotos = await _productPhotoRepository.GetItemsByProductId(productId);
 
-            var photoIds = productPhotos.Select(x => x.Id).ToList();
+            var photoIds = productPhotos.Select(x => x.PhotoId).ToList();
 
             var photos = await context.Photos
                 .AsNoTracking()

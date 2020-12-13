@@ -1,0 +1,167 @@
+﻿@using BeautyStore.Models;
+@model ProductModel;
+
+@{
+    var categories = (IEnumerable<CategoryModel>)ViewBag.Categories;
+    var pageTitle = Model.Id == Guid.Empty ? "Создание товара" : $"Редактировать {Model.Title}";
+}
+
+<style>
+    .upload-photo-wrapper:hover,
+    .upload-photo-block:hover,
+    .upload-photo-input:hover,
+    .upload-photo-input-new-photo:hover {
+        cursor: pointer;
+    }
+
+    .upload-photo-wrapper {
+        display: inline-block;
+        width: 150px;
+        height: 200px;
+        overflow: hidden;
+        margin-left: 5px;
+    }
+
+    .upload-photo-block {
+        width: 150px;
+        height: 200px;
+        background-color: rgba(0,0,0,0.1);
+        position: relative;
+        border-radius: 10px;
+        background-size: cover;
+    }
+
+    .upload-photo-input,
+    .upload-photo-input-new-photo {
+        font-size: 50px;
+        width: 150px;
+        height: 200px;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        position: relative;
+        top: -200px;
+    }
+
+    div#addPhoto {
+        text-align: center;
+        font-size: 30px;
+        color: gray;
+        padding-top: 50px;
+    }
+</style>
+
+<h2 class="text-center">@pageTitle</h2>
+
+<div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center h-100">
+        <div class="col col-sm-10 col-md-10 col-lg-8 col-xl-6">
+            <form method="post" asp-controller="Product" asp-action="Edit" autocomplete="off">
+                <div asp-validation-summary="ModelOnly"></div>
+                @Html.HiddenFor(m => m.Id)
+                <div class="form-group">
+                    <input asp-for="Title" class="form-control form-control-lg" placeholder="Название" type="text" />
+                </div>
+                <div class="form-group">
+                    <textarea asp-for="Description" class="form-control form-control-lg" placeholder="Описание"></textarea>
+                </div>
+                <div class="form-group">
+                    <input asp-for="Price" class="form-control form-control-lg" placeholder="Цена" type="text" />
+                </div>
+                <div class="form-group">
+                    @Html.DropDownListFor(x => x.Category.Id, categories.Select(y => new SelectListItem
+                        {
+                            Value = y.Id.ToString(),
+                            Text = y.Title,
+                            Selected = Model.Category != null && y.Id == Model.Category.Id
+                        }),
+                        "Категория",
+                        new { @class = "form-control form-control-lg" })
+                </div>
+                <div class="photo-info" style="font-size:12px; color:gray; text-align:center; margin:5px;">
+                    Чтобы изменить фото, нажмите на него. Первое фото - обложка товара
+                </div>
+                <div class="photos">
+                    @for (var i = 0; i < Model.Photos.Count; i++)
+                    {
+                        @Html.HiddenFor(m => m.Photos[i].Id)
+                        <div class="upload-photo-wrapper">
+                            @Html.HiddenFor(m => m.Photos[i].Base64)
+                            <div class="upload-photo-block" style="background-image:url('@Model.Photos[i].Base64')"></div>
+                            <input type="file" onchange="changeOldPhoto(this)" class="upload-photo-input" name="upload" />
+                        </div>
+                    }
+                    <div class="upload-photo-wrapper">
+                        <input style="display:none" />
+                        <div id="addPhoto" class="upload-photo-block">
+                            Добавить фото
+                        </div>
+                        <input type="file" onchange="addPhoto(this)" class="upload-photo-input-new-photo" name="upload" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-info btn-lg btn-block">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function addPhoto(e) {
+        let el = $(e);
+        debugger;
+        let photoBlock = el.prev();
+        let file = el[0].files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                let base64 = e.target.result;
+                let photosCount = $('.upload-photo-wrapper').length - 1;
+                photoBlock.css('background-image', 'url(' + base64 + ')');
+
+                el.removeClass('upload-photo-input-new-photo');
+                el.addClass('upload-photo-input');
+
+                el.prev().removeAttr('id');
+                el.prev().text("");
+                el.removeAttr('onchange').bind('change', changeNewPhoto);
+
+                let html = '<div class="upload-photo-wrapper"><input style="display:none" /><div id="addPhoto" class="upload-photo-block">Добавить фото</div><input type="file" onchange="addPhoto(this)" class="upload-photo-input-new-photo" name="upload" />';
+                el.parent().after(html);
+
+                el.prev().prev().attr('id', `Photos_${photosCount}__Base64`);
+                el.prev().prev().attr('name', `Photos[${photosCount}].Base64`);
+                el.prev().prev().attr('value', base64);
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+    function changePhoto(el) {
+        let photoBlock = el.prev();
+        let file = el[0].files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                debugger;
+                let base64 = e.target.result;
+                    photoBlock.css('background-image', 'url(' + base64 + ')');
+                el.prev().prev().attr('value', base64);
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function changeOldPhoto(context) {
+        let el = $(context);
+        changePhoto(el);
+    }
+
+    function changeNewPhoto() {
+        let el = $(this);
+        changePhoto(el);
+    }
+
+
+</script>
