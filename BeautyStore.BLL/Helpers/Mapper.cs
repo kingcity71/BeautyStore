@@ -19,7 +19,7 @@ namespace BeautyStore.BLL.Helpers
             }
             return result;
         }
-
+        
         private bool IsTypeEqual(Type prop1, Type prop2)
         {
             if (prop1.IsEnum && prop2.IsEnum) return true;

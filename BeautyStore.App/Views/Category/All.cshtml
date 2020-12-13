@@ -1,0 +1,41 @@
+﻿@using BeautyStore.Models;
+@using System.Linq;
+@model IEnumerable<CategoryModel>;
+
+@{ 
+    var parents = Model.Where(x => x.Parent == null).ToList();
+    var children = Model.Where(x => x.Parent != null).ToList();
+}
+
+<div class="row">
+    <div class="col-10">
+        <h3>Категории</h3>
+    </div>
+    <div class="col-2">
+        <button class="btn btn-primary" onclick="window.location.href = '/category/item/'">
+            Создать
+        </button>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <h4>Список категорий пуст</h4>
+}
+
+@foreach (var category in parents)
+{
+    <div>
+        <a asp-controller="Category" asp-action="Item" asp-route-id="@category.Id">
+            @category.Title
+        </a>
+    </div>
+    foreach (var child in children.Where(x => x.Parent?.Id == category.Id))
+    {
+        <div style="padding-left:10px">
+            <a asp-controller="Category" asp-action="Item" asp-route-id="@child.Id">
+                @child.Title
+            </a>
+        </div>
+    }
+}

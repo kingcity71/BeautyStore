@@ -4,7 +4,7 @@ using System;
 
 namespace BeautyStore.Entities
 {
-    public class Basket : Entity
+    public class Cart : Entity
     {
         public Guid UserId { get; set; }
         public Guid ProductId { get; set; }

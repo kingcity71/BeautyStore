@@ -30,7 +30,10 @@
                             @if (User.IsInRole(ADMIN_ROLE))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Chatting" asp-action="Conversations">Сообщения пользователей</a>
+                                    <a class="nav-link text-dark" asp-controller="Category" asp-action="All">Категории</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Chatting" asp-action="Conversations">Сообщения пользователей</a>
                                 </li>
                             }
                             @if (User.IsInRole(USER_ROLE))

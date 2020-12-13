@@ -12,11 +12,17 @@ namespace BeautyStore.App
     {
         public static void AddAppServices(this IServiceCollection services)
         {
-            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IMapper, Mapper>();
+
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IProductPhotoRepository, ProductPhotoRepository>();
+            services.AddScoped<IPhotoRepository, PhotoRepository>();
+
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IMessageService, MessageService>();
         }
     }

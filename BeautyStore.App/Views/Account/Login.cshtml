@@ -1,18 +1,21 @@
 ﻿@model BeautyStore.App.Models.LoginViewModel;
 
-<h2>Вход в приложение</h2>
-<form method="post" asp-controller="Account" asp-action="Login" autocomplete="off">
-    <div asp-validation-summary="ModelOnly"></div>
-    <div>
-        <label asp-for="Login">Email</label><br />
-        <input asp-for="Login" />
+<h2 class="text-center">Вход в приложение</h2>
+<div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center h-100">
+        <div class="col col-sm-10 col-md-10 col-lg-8 col-xl-6">
+            <form method="post" asp-controller="Account" asp-action="Login" autocomplete="off">
+                <div asp-validation-summary="ModelOnly"></div>
+                <div class="form-group">
+                    <input asp-for="Login" class="form-control form-control-lg" placeholder="Email" type="text" />
+                </div>
+                <div class="form-group">
+                    <input asp-for="Password" class="form-control form-control-lg" placeholder="Пароль" type="password" />
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-info btn-lg btn-block">Войти</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div>
-        <label asp-for="Password"></label><br />
-        <input asp-for="Password" />
-        <span asp-validation-for="Password"></span>
-    </div>
-    <div>
-        <input type="submit" value="Войти" />
-    </div>
-</form>
+</div>
