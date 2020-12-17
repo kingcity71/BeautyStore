@@ -11,5 +11,6 @@ namespace BeautyStore.Interfaces.Services
         Task Hold(Guid productiId, Guid userId);
         Task Remove(Guid cartId);
         Task Pay(Guid id);
+        Task<bool> IsPaymentPossible(Guid productId);
     }
 }

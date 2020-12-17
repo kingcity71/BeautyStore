@@ -1,0 +1,88 @@
+﻿@using  BeautyStore.Models.Enum;
+@model IEnumerable<CartModel>
+@{
+    ViewData["Title"] = "Корзина";
+}
+<style>
+    .cart-line{
+        height:50px;
+        border-bottom:1px solid gray;
+        margin-bottom: 3px;
+    }
+
+    
+
+    .cart-title {
+        width: calc(100% - 300px);
+    }
+    .buttons{
+        position:absolute;
+        right:0px;
+    }
+    .buttons button,
+    .buttons div{
+        width:100px;
+    }
+</style>
+<div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center h-100">
+        <div class="col col-sm-10 col-md-10 col-lg-10 col-xl-10">
+            <h3 class="text-center">Корзина</h3>
+            @if (Model.Any())
+            {
+                @foreach (var cart in Model)
+                {
+                    <div class="row cart-line">
+                        <div class="cart-title">
+                            @cart.Product.Title
+                        </div>
+                        <div class="buttons">
+                            @if (cart.Status == BasketStatus.Hold)
+                            {
+                                <button class="btn btn-success payBtn" data-product-id="@cart.ProductId" data-cart-id="@cart.Id">
+                                    Оплатить
+                                </button>
+                                <button class="btn btn-danger removeBtn" data-cart-id="@cart.Id">Убрать</button>
+                            }
+                            else
+                            {
+                                <div class="btn btn-primary">Оплачено</div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <h4>Товаров в корзине нет</h4>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $('.payBtn').on('click', function (context) {
+        let el = $(context.target);
+        let productId = el.data('product-id');
+        let cartId = el.data('cart-id');
+       
+        $.get('/cart/IsPaymentPossible?productId=' + productId, function (data) {
+    
+            if (data) {
+                $.get('/cart/Pay?cartId=' + cartId, function () {
+                    window.location.href = `/cart/MyCart`;
+                });
+            }
+            else
+                alert("К сожалению, товар закончился");
+        })
+    });
+
+    $('.removeBtn').on('click', function (context) {
+        let el = $(context.target);
+        let cartId = el.data('cart-id');
+
+        $.get('/cart/remove?cartId=' + cartId, function (data) {
+            window.location.href = `/cart/MyCart`;
+        });
+    });
+</script>

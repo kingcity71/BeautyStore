@@ -22,7 +22,7 @@ namespace BeautyStore.App
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IStoreRepository, StoreRepository>();
-
+            services.AddScoped<ICartRepository, CartRepository>();
 
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IUserService, UserService>();
@@ -30,6 +30,7 @@ namespace BeautyStore.App
             services.AddScoped<ISearchService, SearchService>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IStoreService, StoreService>();
+            services.AddScoped<ICartService, CartService>();
         }
     }
 }

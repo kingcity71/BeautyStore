@@ -15,19 +15,28 @@ namespace BeautyStore.BLL.Services
     {
         private readonly ICartRepository _cartRepository;
         private readonly IStoreRepository _storeRepository;
+        private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
-        public CartService(ICartRepository cartRepository, IStoreRepository storeRepository, IMapper mapper)
+        public CartService(ICartRepository cartRepository, IStoreRepository storeRepository, IProductService productService, IMapper mapper)
         {
             _cartRepository = cartRepository;
             _storeRepository = storeRepository;
+            _productService = productService;
             _mapper = mapper;
         }
+
 
         public async Task<IEnumerable<CartModel>> GetUserCart(Guid userId)
         {
             var entites = await _cartRepository.GetItemsByUserId(userId);
-            var models = entites.Select(entity => _mapper.Map<Cart, CartModel>(entity)).ToList();
+            var models = Activator.CreateInstance<List<CartModel>>();
+            foreach(var entity in entites)
+            {
+                var model = _mapper.Map<Cart, CartModel>(entity);
+                model.Product = await _productService.GetItem(entity.ProductId);
+                models.Add(model);
+            }
             return models;
         }
 
@@ -48,21 +57,7 @@ namespace BeautyStore.BLL.Services
             =>  await _cartRepository.Delete(cartId);
 
         public async Task<bool> IsPaymentPossible(Guid productId)
-        {
-            var storeEntity = await _storeRepository.GetItemByProductId(productId);
-            if (storeEntity == null)
-            {
-                storeEntity = new Store
-                {
-                    Id = Guid.NewGuid(),
-                    Count = 0,
-                    ProductId = productId
-                };
-                await _storeRepository.Create(storeEntity);
-                return false;
-            }
-            return storeEntity.Count > 0; 
-        }
+            => await _storeRepository.IsCountMoreThanOne(productId);
 
         public async Task Pay(Guid id)
         {
@@ -70,7 +65,7 @@ namespace BeautyStore.BLL.Services
             entity.Status = Entities.Enum.BasketStatus.Paid;
             await _cartRepository.Update(entity);
 
-            var storeEntity = await _storeRepository.GetItemByProductId(id);
+            var storeEntity = await _storeRepository.GetItemByProductId(entity.ProductId);
             storeEntity.Count -= 1;
             await _storeRepository.Update(storeEntity);
         }

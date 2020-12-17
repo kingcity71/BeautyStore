@@ -3,7 +3,6 @@ using BeautyStore.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BeautyStore.DAL.Repository
@@ -19,6 +18,15 @@ namespace BeautyStore.DAL.Repository
             using var context = GetContext();
             return await context.Store.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.ProductId == productId);
+        }
+
+        public async Task<bool> IsCountMoreThanOne(Guid productId)
+        {
+            using var context = GetContext();
+            var storeItem = await context.Store.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ProductId == productId);
+            if (storeItem == null) return false;
+            return storeItem.Count > 0;
         }
     }
 }

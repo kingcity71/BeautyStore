@@ -125,6 +125,8 @@
     
     $('.supplyButton').on('click', () => window.location.href = `/product/supply?productId=${$('#Id').val()}`);
 
+    $('.cartButton').on('click', () => window.location.href = `/cart/add?productId=${$('#Id').val()}`);
+
     let getPhotos = () => {
         let photos = $('.photo-hidden');
         let res = [];
