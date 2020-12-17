@@ -1,0 +1,26 @@
+﻿@model BeautyStore.App.Models.SupplyModel;
+@{
+    ViewData["Title"] = "Supply";
+}
+
+<form asp-controller="Product" asp-action="Supply" method="post">
+    <div class="container-fluid h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col col-sm-8 col-md-8 col-lg-8 col-xl-8">
+                @Html.HiddenFor(x => x.Product.Id)
+                
+                <h2>Поставка @Model.Product.Title</h2>
+                
+                <h3>Остаток на счете : @Model.Balance</h3>
+                <div class="form-group">
+                    <input class="form-control" asp-for="Count" placeholder="Количество" />
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success">Оформить поставку</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+

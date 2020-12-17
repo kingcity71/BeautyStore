@@ -1,0 +1,155 @@
+﻿@model BeautyStore.Models.ProductModel;
+
+@{
+    var mainPhoto = Model.Photos.Any() ? Model.Photos[0].Base64 : string.Empty;
+}
+<style>
+    .info-block{
+        width: calc(100% - 300px);
+    }
+    .button {
+        height: 40px;
+        width: 150px;
+        position: absolute;
+        text-align: center;
+        left: 30px;
+        top:220px;
+    }
+    .supplyButton{
+        top:270px;
+    }
+    #photoMain {
+        height: 250px;
+        display: inline-block;
+        margin: 0 25px 0 25px;
+    }
+
+    .arrow {
+        position: absolute;
+        top: 100px;
+        width: 25px;
+    }
+
+    .rigth-arrow {
+        left: 175px;
+    }
+
+    .arrow img {
+        width: 20px;
+    }
+
+        .arrow img:hover,
+        .button:hover {
+            cursor: pointer;
+        }
+
+    .photo-block {
+        display: inline-block;
+        width: 250px;
+    }
+
+    #photoMain {
+        width: 150px;
+        height: 200px;
+        background-color: rgba(0,0,0,0.1);
+        position: relative;
+        border-radius: 10px;
+        background-size: cover;
+    }
+</style>
+@Html.HiddenFor(x => x.Id)
+<div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center h-100">
+        <div class="col col-sm-10 col-md-10 col-lg-10 col-xl-10">
+            <div class="row">
+                <div class="photo-block">
+                    @if (Model.Photos.Any())
+                    {
+                        @if (Model.Photos.Count() > 1)
+                        {
+                            <div class="arrow"><img id="prevPhoto" src="~/assets/left.png" /></div>
+                        }
+                        <div id="photoMain" data-index="0" style="background-image:url('@mainPhoto')"></div>
+                        @if (Model.Photos.Count() > 1)
+                        {
+                            <div class="arrow rigth-arrow"><img id="nextPhoto" src="~/assets/right.png" /></div>
+                        }
+                    }
+                    else
+                    {
+                        <div id="photoMain" data-index="0" style="background-image:url('~/assets/empty.png')"></div>
+                    }
+                </div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (User.IsInRole("Admin"))
+                    {
+                        <div class="btn btn-primary button editButton">
+                            Редактировать
+                        </div>
+                        <div class="btn btn-success button supplyButton">
+                            Поставка
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="btn btn-primary button cartButton">
+                            В корзину
+                        </div>
+                    }
+                }
+
+                <div class="info-block">
+                    <h3 class="text-center">
+                        @Model.Title, @Model.Price Rub
+                    </h3>
+                    <h6 class="text-center">
+                        Категория: @Model.Category.Title
+                    </h6>
+                    <div class="col-12">
+                        @Model.Description
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@foreach (var photo in Model.Photos)
+{
+    <div class="photo-hidden" data-index="@photo.Key" data-value="@photo.Value.Base64" hidden></div>
+}
+
+<script>
+
+    $('.editButton').on('click', () => window.location.href = `/product/edit/${$('#Id').val()}`);
+    
+    $('.supplyButton').on('click', () => window.location.href = `/product/supply?productId=${$('#Id').val()}`);
+
+    let getPhotos = () => {
+        let photos = $('.photo-hidden');
+        let res = [];
+        for (let i = 0; i < photos.length; i++) {
+            let photoBlock = $(photos[i]);
+            res.push({ index: parseInt(photoBlock.data('index')), value: photoBlock.data('value') });
+        }
+        return res;
+    }
+
+    $('#nextPhoto').on('click', function () {
+        let photos = getPhotos();
+        let mainPhotoBlock = $('#photoMain');
+        let currentIndex = parseInt(mainPhotoBlock.data('index'));
+        let nextIndex = photos.length - 1 == currentIndex ? 0 : currentIndex + 1;
+        mainPhotoBlock.css('background-image', `url('${photos[nextIndex].value}')`);
+        mainPhotoBlock.data('index', `${nextIndex}`);
+    })
+
+    $('#prevPhoto').on('click', function () {
+        let photos = getPhotos();
+        let mainPhotoBlock = $('#photoMain');
+        let currentIndex = parseInt(mainPhotoBlock.data('index'));
+        let prevIndex = 0 == currentIndex ? photos.length - 1 : currentIndex - 1;
+        mainPhotoBlock.css('background-image', `url('${photos[prevIndex].value}')`);
+        mainPhotoBlock.data('index', `${prevIndex}`);
+    })
+</script>

@@ -1,8 +1,138 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using BeautyStore.App.Models;
+@model SearchModel;
+
+@{
+    ViewData["Title"] = "Главная страница";
+
+    var categories = (IEnumerable<CategoryModel>)ViewBag.Categories;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid h-100">
+    <form asp-action="Index" asp-controller="Home" method="post" autocomplete="off">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <div class="form-group">
+                    @Html.TextBoxFor(x => x.Key, new { @class = "form-control form-control-lg", placeholder = "Я ищу...", @type = "text" })
+                </div>
+            </div>
+            <div class="col col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                <div class="form-group">
+                    @Html.DropDownListFor(x => x.CategoryId,
+                        categories.Select(y => new SelectListItem
+                        {
+                            Value = y.Id.ToString(),
+                            Text = y.Title,
+                            Selected = Model.CategoryId != null && y.Id == Model.CategoryId
+                        }),
+                        "Без категории",
+                        new { @class = "form-control form-control-lg" })
+                </div>
+            </div>
+            <div class="col col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                <div class="form-group">
+                    <button class="btn btn-success">Найти</button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+<hr />
+
+<style>
+    .title {
+        white-space: nowrap; /* Запрещаем перенос строк */
+        overflow: hidden;
+        height: 20px;
+        width: 100%;
+        display: inline-block;
+        text-overflow: ellipsis;
+    }
+
+    .imgBlock, .cardBody {
+        min-height: 160px;
+        height: 160px;
+        max-height: 160px;
+        width: 100%;
+    }
+
+    .bookImg {
+        margin: auto;
+        height: 100%;
+        display: block;
+        border: 1px solid lightgray !important;
+        margin-top: 5px;
+    }
+
+    .bookTitleItem {
+        max-height: 70px;
+        font-size: 16px;
+        color: rgb(18, 20, 22);
+    }
+
+    .categoryItem {
+        max-height: 30px;
+        font-size: 13px;
+        color: rgb(128, 128, 128);
+    }
+
+    .bookCard {
+        min-height: 230px;
+        height: 230px;
+        max-height: 230px;
+    }
+
+        .bookCard:hover {
+            box-shadow: 0px 0px 4px black;
+            cursor: pointer;
+        }
+</style>
+
+
+@if (Model.Products.Any())
+{
+    <div class="container-fluid h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col col-sm-4 col-md-3 col-lg-2 col-xl-2">
+                    @{
+                        var isPhotoExist = product.Photos.Any();
+                        var base64 = isPhotoExist ?
+                            product.Photos.FirstOrDefault().Value.Base64
+                            : string.Empty;
+
+                        var id = product.Id;
+                        var title = product.Title;
+                        var categoryTitle = product.Category.Title;
+                        var categoryId = product.Category.Id;
+                    }
+                    <div class="card bookCard">
+                        <div class="bookTitleItem text-center w-100">
+                            <a class="title" href="/product/item/@id">@title</a>
+                        </div>
+
+                        <div class="imgBlock">
+                            @if (string.IsNullOrEmpty(base64))
+                            {
+                                <img class="bookImg" src="~/assets/empty.png" alt="Card image cap" />
+                            }
+                            else
+                            {
+                                <img class="bookImg" src="@base64" alt="Card image cap" />
+                            }
+                        </div>
+
+                        <div class="categoryItem text-center">
+                            <a href="/home/index?categoryId=@categoryId">@categoryTitle</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+}
+else
+{
+    <h1 class="text-center">Товары не найдены</h1>
+}

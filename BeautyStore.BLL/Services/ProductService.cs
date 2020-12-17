@@ -47,7 +47,8 @@ namespace BeautyStore.BLL.Services
 
                 await _photoRepo.Create(photoEntity);
 
-                await _productPhotoRepo.Create(new ProductPhoto { Id = Guid.NewGuid(), PhotoId = photoEntity.Id, ProductId = productEntity.Id, DisplayOrder = order });
+                await _productPhotoRepo.Create(new ProductPhoto 
+                { Id = Guid.NewGuid(), PhotoId = photoEntity.Id, ProductId = productEntity.Id, DisplayOrder = order });
             }
 
             return productModel;
@@ -63,12 +64,13 @@ namespace BeautyStore.BLL.Services
             await _productRepo.Delete(id);
         }
 
-        public async Task<ProductModel> GetItem(Guid id)
+        public async Task<ProductModel> GetItem(Guid id, bool onlyCoverPhoto = false)
         {
             var productEntity = await _productRepo.GetItem(id);
             var productModel = _mapper.Map<Product, ProductModel>(productEntity);
 
-            var photos = await _photoRepo.GetPhotosByProductId(id);
+            var photos = await _photoRepo.GetPhotosByProductId(id, onlyCoverPhoto);
+            
             foreach (var photo in photos)
                 productModel.Photos.Add(photo.Key, _mapper.Map<Photo, PhotoModel>(photo.Value));
 

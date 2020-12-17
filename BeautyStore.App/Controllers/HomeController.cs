@@ -6,28 +6,47 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BeautyStore.App.Models;
+using Microsoft.AspNetCore.Identity;
+using BeautyStore.Interfaces.Services;
+using BeautyStore.Models;
 
 namespace BeautyStore.App.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
+        const int SKIP = 10;
+        const int TAKE = 12;
+        private readonly ISearchService _searchService;
+        private readonly ICategoryService _categoryService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(RoleManager<IdentityRole> roleManager, ISearchService searchService, ICategoryService categoryService) 
+            : base(roleManager)
         {
-            _logger = logger;
+            _searchService = searchService;
+            _categoryService = categoryService;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(Guid? categoryId)
         {
-            return View();
+            var model = Activator.CreateInstance<SearchModel>();
+            model.Products = await _searchService.Search(categoryId, null, int.MaxValue, SKIP * model.Page);
+            model.CategoryId = categoryId;
+            ViewBag.Categories = await GetCategories();
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Index(SearchModel model)
+        {
+            var key = !string.IsNullOrEmpty(model.Key) ? model.Key.Trim() : string.Empty;
+            model.Products = await _searchService.Search(model.CategoryId, key, int.MaxValue, SKIP * model.Page);
+
+            ViewBag.Categories = await GetCategories();
+            return View(model);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        private Task<IEnumerable<CategoryModel>> GetCategories()
+            => _categoryService.GetAllItems();
 
-       
     }
 }

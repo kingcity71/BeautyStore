@@ -19,11 +19,17 @@ namespace BeautyStore.App
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IProductPhotoRepository, ProductPhotoRepository>();
             services.AddScoped<IPhotoRepository, PhotoRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IStoreRepository, StoreRepository>();
+
 
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ISearchService, SearchService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IStoreService, StoreService>();
         }
     }
 }
