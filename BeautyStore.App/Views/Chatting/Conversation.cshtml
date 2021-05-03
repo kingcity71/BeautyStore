@@ -62,16 +62,6 @@
     .withUrl("/chat")
     .build();
 
-const getDateTime = function () {
-    var currentdate = new Date();
-    var datetime = currentdate.getDate() + "."
-        + (currentdate.getMonth() + 1) + "."
-        + currentdate.getFullYear() + " "
-        + currentdate.getHours() + ":"
-        + currentdate.getMinutes()
-    return datetime;
-}
-
 hubConnection.on("Send", function (data) {
     var dateTime = getDateTime();
 
@@ -84,18 +74,10 @@ hubConnection.on("Send", function (data) {
 
     $('#chatroom').prepend(html);
 });
-
 document.getElementById("sendBtn").addEventListener("click", function (e) {
     let message = document.getElementById("message").value;
 
     var dateTime = getDateTime();
-    var html2 = '<div class="msg-from">' +
-        '<div class="msg-username">' +
-        '@Model.UserLoginName[@Model.CurrentUserLogin]' +
-        '<span class="msg-time">' + dateTime + '</span>' +
-        '</div>' +
-        '<div class="msg-body">' + message + '</div>' +
-        '</div>';
 
     var html = '<div class="d-flex justify-content-end mb-4">' +
         '<div class="msg_cotainer_send">' +
@@ -108,6 +90,16 @@ document.getElementById("sendBtn").addEventListener("click", function (e) {
     $('#message').val('');
     hubConnection.invoke("Send", message, '@Model.InterlocutorLogin');
 });
-
 hubConnection.start();
+
+    const getDateTime = function () {
+    var currentdate = new Date();
+    var datetime = currentdate.getDate() + "."
+        + (currentdate.getMonth() + 1) + "."
+        + currentdate.getFullYear() + " "
+        + currentdate.getHours() + ":"
+        + currentdate.getMinutes()
+    return datetime;
+}
+
 </script>

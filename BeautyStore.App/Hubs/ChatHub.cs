@@ -15,7 +15,12 @@ namespace BeautyStore.App.Hubs
         
         public async Task Send(string msg, string to)
         {
-            await _messageService.PutMessage(new MessageModel { Date = DateTime.Now, MessageBody = msg, From = Context.User.Identity.Name, To = to });
+            await _messageService.PutMessage(new MessageModel 
+            {
+                Date = DateTime.Now, 
+                MessageBody = msg,
+                From = Context.User.Identity.Name, To = to 
+            });
             await Clients.User(to).SendAsync("Send", msg);
         }
     }

@@ -3,10 +3,10 @@ using System;
 
 namespace BeautyStore.Entities
 {
-    public class Store : Entity
+    public class CartProduct : Entity
     {
+        public Guid CartId { get; set; }
         public Guid ProductId { get; set; }
-        public Guid BranchId { get; set; }
-        public int Count{ get; set; }
+        public int Count { get; set; }
     }
 }

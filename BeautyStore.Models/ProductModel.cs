@@ -10,5 +10,6 @@ namespace BeautyStore.Models
         public SortedList<int, PhotoModel> Photos { get; set; } = new SortedList<int, PhotoModel>();
         public decimal Price { get; set; }
         public string Title { get; set; }
+        public Dictionary<BranchModel, int> BranchCounts{ get; set; }
     }
 }

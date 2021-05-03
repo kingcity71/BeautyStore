@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,6 +45,11 @@ namespace BeautyStore.DAL.Repository
             using var ctx = GetContext();
             return await ctx.Set<T>().AsNoTracking().ToListAsync();
         }
+        public async Task<IEnumerable<T>> GetMany(Expression<Func<T,bool>> expression)
+        {
+            using var ctx = GetContext();
+            return await ctx.Set<T>().Where(expression).AsNoTracking().ToListAsync();
+        }
 
         public async Task<T> GetItem(Guid id)
         {
@@ -50,6 +57,14 @@ namespace BeautyStore.DAL.Repository
             return await ctx.Set<T>()
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<T> GetItem(Expression<Func<T, bool>> expression)
+        {
+            using var ctx = GetContext();
+            return await ctx.Set<T>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(expression);
         }
 
         public async Task Update(T item)

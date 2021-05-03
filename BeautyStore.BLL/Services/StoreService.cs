@@ -16,23 +16,24 @@ namespace BeautyStore.BLL.Services
         {
             _storeRepository = storeRepository;
         }
-        public async Task<int> GetBalance(Guid productId)
+        public async Task<int> GetBalance(Guid productId, Guid branchId)
         {
-            var storeItem = await _storeRepository.GetItemByProductId(productId);
+            var storeItem = await _storeRepository.GetItem(x=>x.ProductId == productId && x.BranchId == branchId);
             if (storeItem == null) return 0;
             return storeItem.Count;
         }
 
-        public async Task Supply(Guid productId, int count)
+        public async Task Supply(Guid productId, int count, Guid branchId)
         {
-            var storeItem = await _storeRepository.GetItemByProductId(productId);
+            var storeItem = await _storeRepository.GetItem(x => x.ProductId == productId && x.BranchId == branchId);
             if (storeItem == null)
             {
                 storeItem = new Store
                 {
                     Id = Guid.NewGuid(),
                     Count = count,
-                    ProductId = productId
+                    ProductId = productId,
+                    BranchId = branchId
                 };
                 await _storeRepository.Create(storeItem);
                 return;

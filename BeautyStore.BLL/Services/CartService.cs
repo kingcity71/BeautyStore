@@ -34,7 +34,7 @@ namespace BeautyStore.BLL.Services
             foreach(var entity in entites)
             {
                 var model = _mapper.Map<Cart, CartModel>(entity);
-                model.Product = await _productService.GetItem(entity.ProductId);
+                //model.Product = await _productService.GetItem(entity.ProductId);
                 models.Add(model);
             }
             return models;
@@ -65,9 +65,9 @@ namespace BeautyStore.BLL.Services
             entity.Status = Entities.Enum.BasketStatus.Paid;
             await _cartRepository.Update(entity);
 
-            var storeEntity = await _storeRepository.GetItemByProductId(entity.ProductId);
-            storeEntity.Count -= 1;
-            await _storeRepository.Update(storeEntity);
+            //var storeEntity = await _storeRepository.GetItemByProductId(entity.ProductId);
+            //storeEntity.Count -= 1;
+            //await _storeRepository.Update(storeEntity);
         }
     }
 }

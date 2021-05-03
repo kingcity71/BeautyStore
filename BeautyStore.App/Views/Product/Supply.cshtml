@@ -3,24 +3,77 @@
     ViewData["Title"] = "Supply";
 }
 
-<form asp-controller="Product" asp-action="Supply" method="post">
-    <div class="container-fluid h-100">
-        <div class="row justify-content-center align-items-center h-100">
-            <div class="col col-sm-8 col-md-8 col-lg-8 col-xl-8">
-                @Html.HiddenFor(x => x.Product.Id)
-                
-                <h2>Поставка @Model.Product.Title</h2>
-                
-                <h3>Остаток на счете : @Model.Balance</h3>
-                <div class="form-group">
-                    <input class="form-control" asp-for="Count" placeholder="Количество" />
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-success">Оформить поставку</button>
-                </div>
+@*<form asp-controller="Product" asp-action="Supply" method="post">*@
+<div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center h-100">
+        <div class="col col-sm-8 col-md-8 col-lg-8 col-xl-8">
+            @Html.HiddenFor(x => x.Product.Id)
+            <h2>Поставка @Model.Product.Title</h2>
+            <div class="form-group">
+                <select id="branchs" class="form-control">
+                    <option>Выберите филиал</option>
+                    @foreach (var branch in Model.Branchs)
+                    {
+                        <option value="@branch.Id">@branch.Name</option>
+                    }
+                </select>
+            </div>
+            <h3 id="balance">Остаток на счете : </h3>
+            <div class="form-group">
+                <input class="form-control" asp-for="Count" placeholder="Количество" />
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success" id="supply">Оформить поставку</button>
             </div>
         </div>
     </div>
-</form>
+</div>
+@*</form>*@
+<script>
+    function setBalance() {
+        let BranchId = $('#branchs').val();
+        let ProductId = $('#Product_Id').val();
 
+        $.ajax({
+            url: `GetBalance?productId=${ProductId}&&branchId=${BranchId}`,
+            statusCode: {
+                200: function (data) {
+                    $('#balance').text(`Остаток на счете : ${data}`)
+                }
+            }
+        })
+    }
+
+    $('#branchs').on('change', function () {
+        setBalance();
+    })
+
+    $('#supply').on('click', function () {
+        let BranchId = $('#branchs').val();
+        let ProductId = $('#Product_Id').val();
+        let Count = $('#Count').val();
+        let model =
+        {
+            BranchId,
+            Count,
+            Product:
+            {
+                Id: ProductId
+            }
+        };
+
+        $.ajax({
+            url: "Supply",
+            method: "Post",
+            dataType: "json",
+            data: model,
+            statusCode: {
+                200: function () {
+                    $('#Count').val(0)
+                    setBalance();
+                }
+            }
+        })
+    })
+</script>
 

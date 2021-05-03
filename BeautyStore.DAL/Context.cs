@@ -22,7 +22,9 @@ namespace BeautyStore.DAL
         public DbSet<Store> Store { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
-
+        public DbSet<Branch> Branchs { get; set; }
+        public DbSet<CartProduct> CartProducts { get; set; }
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

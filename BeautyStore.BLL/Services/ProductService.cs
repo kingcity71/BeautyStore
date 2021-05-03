@@ -4,6 +4,7 @@ using BeautyStore.Interfaces.Repositories;
 using BeautyStore.Interfaces.Services;
 using BeautyStore.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,22 +13,28 @@ namespace BeautyStore.BLL.Services
     public class ProductService : IProductService
     {
         private readonly IBaseRepository<Product> _productRepo;
+        private readonly IBaseRepository<Branch> _branchRepo;
         private readonly IProductPhotoRepository _productPhotoRepo;
         private readonly IPhotoRepository _photoRepo;
         private readonly ICategoryService _categoryService;
+        private readonly IStoreService _storeService;
         private readonly IMapper _mapper;
 
         public ProductService(IBaseRepository<Product> productRepo,
             IProductPhotoRepository productPhotoRepo,
             IPhotoRepository photoRepo,
             ICategoryService categoryService,
-            IMapper mapper)
+            IMapper mapper, 
+            IStoreService storeService,
+            IBaseRepository<Branch> branchRepo)
         {
             _productRepo = productRepo;
             _productPhotoRepo = productPhotoRepo;
             _photoRepo = photoRepo;
             _categoryService = categoryService;
             _mapper = mapper;
+            _branchRepo = branchRepo;
+            _storeService = storeService;
         }
         public async Task<ProductModel> Create(ProductModel productModel)
         {
@@ -64,7 +71,7 @@ namespace BeautyStore.BLL.Services
             await _productRepo.Delete(id);
         }
 
-        public async Task<ProductModel> GetItem(Guid id, bool onlyCoverPhoto = false)
+        public async Task<ProductModel> GetItem(Guid id, bool onlyCoverPhoto = false, bool includeStoreInfo = false)
         {
             var productEntity = await _productRepo.GetItem(id);
             var productModel = _mapper.Map<Product, ProductModel>(productEntity);
@@ -76,6 +83,19 @@ namespace BeautyStore.BLL.Services
 
             productModel.Category = await _categoryService.GetItem(productEntity.CategoryId);
 
+            var branchs = (await _branchRepo.GetAllItems())
+                .Select(x => _mapper.Map<Branch, BranchModel>(x))
+                .ToList();
+
+            if (includeStoreInfo)
+            {
+                productModel.BranchCounts = new Dictionary<BranchModel, int>();
+                foreach (var branch in branchs)
+                {
+                    var balance = await _storeService.GetBalance(id, branch.Id);
+                    productModel.BranchCounts.Add(branch, balance);
+                }
+            }
             return productModel;
         }
 

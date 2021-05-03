@@ -4,20 +4,23 @@
     var mainPhoto = Model.Photos.Any() ? Model.Photos[0].Base64 : string.Empty;
 }
 <style>
-    .info-block{
+    .info-block {
         width: calc(100% - 300px);
     }
+
     .button {
         height: 40px;
         width: 150px;
         position: absolute;
         text-align: center;
         left: 30px;
-        top:220px;
+        top: 220px;
     }
-    .supplyButton{
-        top:270px;
+
+    .supplyButton {
+        top: 270px;
     }
+
     #photoMain {
         height: 250px;
         display: inline-block;
@@ -93,9 +96,9 @@
                     }
                     else
                     {
-                        <div class="btn btn-primary button cartButton">
+                        @*<div class="btn btn-primary button cartButton">
                             В корзину
-                        </div>
+                        </div>*@
                     }
                 }
 
@@ -111,6 +114,41 @@
                     </div>
                 </div>
             </div>
+            @if (User.IsInRole("User"))
+            {
+                <div class="row" style="margin-top:30px; border-top:1px solid gray">
+                    <div class="text-center col-12">Наличие в филиалах</div>
+                    @if (Model.BranchCounts.Count(x => x.Value != 0) == 0)
+                    {
+                        <div class="col-12">
+                            <div class=" text-center">
+                                Нет в наличии.
+                                <a>Сообщить о поступлении?</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var branch in Model.BranchCounts)
+                        {
+                            <div class="col-12" style="margin-bottom:5px; margin-top:5px">
+                                <div class="row">
+                                    <div class="col-6">@($"{branch.Key.Name} ({branch.Key.Address})")</div>
+                                    <div class="col-4">
+                                        <input placeholder="Количество" class="form-control" />
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="btn btn-primary">
+                                            Купить
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -122,7 +160,7 @@
 <script>
 
     $('.editButton').on('click', () => window.location.href = `/product/edit/${$('#Id').val()}`);
-    
+
     $('.supplyButton').on('click', () => window.location.href = `/product/supply?productId=${$('#Id').val()}`);
 
     $('.cartButton').on('click', () => window.location.href = `/cart/add?productId=${$('#Id').val()}`);

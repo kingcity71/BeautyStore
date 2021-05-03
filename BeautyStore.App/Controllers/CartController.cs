@@ -19,6 +19,10 @@ namespace BeautyStore.App.Controllers
         }
 
         [HttpGet]
+        public IActionResult Payment()
+            => View();
+
+        [HttpGet]
         public async Task Pay(Guid cartId)
             => await _cartService.Pay(cartId);
 
