@@ -7,8 +7,12 @@ namespace BeautyStore.Interfaces.Services
 {
     public interface ICartService
     {
+        Task CartProductTrash(Guid cartId, Guid productId);
+        Task CartMinus(Guid cartId, Guid productId);
+        Task CartPlus(Guid cartId, Guid productId);
+        Task<int> GetProductCount(Guid productId, Guid branchId);
         Task<IEnumerable<CartModel>> GetUserCart(Guid userId);
-        Task Hold(Guid productiId, Guid userId);
+        Task Hold(Guid productiId, Guid userId, Guid branchId, int count);
         Task Remove(Guid cartId);
         Task Pay(Guid id);
         Task<bool> IsPaymentPossible(Guid productId);

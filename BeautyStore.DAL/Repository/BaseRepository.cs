@@ -21,11 +21,12 @@ namespace BeautyStore.DAL.Repository
             _configuration = configuration;
         }
         protected Context GetContext() => new Context(_configuration);
-        public async Task Create(T item)
+        public async Task<T> Create(T item)
         {
             using var ctx = GetContext();
-            await ctx.AddAsync<T>(item);
+            var entity = await ctx.AddAsync(item);
             await ctx.SaveChangesAsync();
+            return entity.Entity;
         }
 
         public async Task Delete(Guid id)

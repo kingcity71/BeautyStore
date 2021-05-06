@@ -4,25 +4,41 @@
     ViewData["Title"] = "Корзина";
 }
 <style>
-    .cart-line{
-        height:50px;
-        border-bottom:1px solid gray;
+    .hover:hover {
+        cursor: pointer;
+    }
+
+    .fontSizeRise:hover {
+        font-size: 1.1rem;
+    }
+
+    .cart-line {
+        height: 50px;
+        border-bottom: 1px solid gray;
         margin-bottom: 3px;
     }
 
-    
+
 
     .cart-title {
         width: calc(100% - 300px);
     }
-    .buttons{
-        position:absolute;
-        right:0px;
+
+    .buttons {
+        position: absolute;
+        right: 0px;
     }
-    .buttons button,
-    .buttons div{
-        width:100px;
-    }
+
+        .buttons button,
+        .buttons div {
+            width: 100px;
+        }
+
+        .scope-info{
+            border:1px solid gray;
+            border-radius:3px;
+            margin-top:15px;
+        }
 </style>
 <div class="container-fluid h-100">
     <div class="row justify-content-center align-items-center h-100">
@@ -32,25 +48,43 @@
             {
                 @foreach (var cart in Model)
                 {
-                    <div class="row cart-line">
-                        <div class="cart-title">
-                            @cart.Product.Title
+                    <div class="container scope-info">
+                        <div class="row ">
+                            <div class="col-12 text-center branch-info" data-id="@cart.BranchId">
+                                @cart.BranchTitle
+                            </div>
                         </div>
-                        <div class="buttons">
-                            @if (cart.Status == BasketStatus.Hold)
-                            {
-                                <button class="btn btn-success payBtn" data-product-id="@cart.ProductId" data-cart-id="@cart.Id">
-                                    Оплатить
-                                </button>
-                                <button class="btn btn-danger removeBtn" data-cart-id="@cart.Id">Убрать</button>
-                            }
-                            else
-                            {
-                                <div class="btn btn-primary">Оплачено</div>
-                            }
+                        @foreach (var product in cart.ProductCounts)
+                        {
+                            <div class="row product-info" data-id="@product.Key.Id" data-branch="@cart.BranchId" data-cart="@cart.Id">
+                                <div class="col-9">
+                                    @product.Key.Title (@product.Key.Price Руб/Шт)
+                                </div>
+                                <div class="col-2 text-center">
+                                    <span class="glyphicon glyphicon-plus hover fontSizeRise productPlus" style="color:green" aria-hidden="true"></span>
+                                    <span class="product-count">@product.Value</span>
+                                    <span class="glyphicon glyphicon-minus red hover fontSizeRise productMinus" style="color:red" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-1">
+                                    <span class="glyphicon glyphicon-trash fontSizeRise hover productTrash" style="color:red" aria-hidden="true"></span>
+                                </div>
+                            </div>
+
+
+                        }
+                    </div>
+                    
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-4"></div>
+                        <div class="col-4">
+                            <div class="text-right">К оплате : @cart.ProductCounts.Sum(y => y.Key.Price * y.Value)</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="btn btn-success w-100">Оплатить</div>
                         </div>
                     </div>
                 }
+
             }
             else
             {
@@ -60,13 +94,80 @@
     </div>
 </div>
 <script>
+    $('.productMinus').on('click', function () {
+        let parent = $(this).closest('.product-info');
+        let productId = parent.data('id');
+        let cart = parent.data('cart');
+        let countBlock = parent.find('.product-count');
+        let count = Number.parseInt(countBlock.text());
+        if (count == 1) {
+            parent.find('.productTrash').click();
+            return
+        }
+        $.ajax({
+            url: `/cart/cartMinus?cartId=${cart}&productId=${productId}`,
+            statusCode: {
+                200: function (data) {
+                    count--;
+                    countBlock.text(count);
+                }
+            }
+        })
+    })
+    $('.productPlus').on('click', function () {
+        let parent = $(this).closest('.product-info');
+        let productId = parent.data('id');
+        let branchId = parent.data('branch');
+        let countBlock = parent.find('.product-count');
+        let cartId = parent.data('cart');
+        let count = Number.parseInt(countBlock.text());
+        $.ajax({
+            url: `/cart/ProductCount?productId=${productId}&branchId=${branchId}`,
+            statusCode: {
+                200: function (data) {
+                    if (data < count) { alert('На складе отсутсвует указанное кол-во.'); return; }
+                    $.ajax({
+                        url: `/cart/cartPlus?cartId=${cartId}&productId=${productId}`,
+                        statusCode: {
+                            200: function (data) {
+                                count++;
+                                countBlock.text(count);  
+                            }
+                        }
+                    })
+                }
+            }
+        })
+        
+    })
+    $('.productTrash').on('click', function () {
+        if (!confirm("Вы уверены?")) return;
+
+        let parent = $(this).closest('.product-info');
+        let productId = parent.data('id');
+        let countBlock = parent.find('.product-count');
+        let cartId = parent.data('cart');
+        $.ajax({
+            url: `/cart/CartProductTrash?cartId=${cartId}&productId=${productId}`,
+            statusCode: {
+                200: function (data) {
+                    parent.remove();
+                }
+            }
+        })
+    })
+
+</script>
+
+
+<script>
     $('.payBtn').on('click', function (context) {
         let el = $(context.target);
         let productId = el.data('product-id');
         let cartId = el.data('cart-id');
-       
+
         $.get('/cart/IsPaymentPossible?productId=' + productId, function (data) {
-    
+
             if (data) {
                 $.get('/cart/Pay?cartId=' + cartId, function () {
                     window.location.href = `/cart/MyCart`;

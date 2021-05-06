@@ -132,13 +132,13 @@
                         @foreach (var branch in Model.BranchCounts)
                         {
                             <div class="col-12" style="margin-bottom:5px; margin-top:5px">
-                                <div class="row">
+                                <div class="row branch-block">
                                     <div class="col-6">@($"{branch.Key.Name} ({branch.Key.Address})")</div>
                                     <div class="col-4">
-                                        <input placeholder="Количество" class="form-control" />
+                                        <input placeholder="Количество" class="form-control product-count" />
                                     </div>
                                     <div class="col-2">
-                                        <div class="btn btn-primary">
+                                        <div class="btn btn-primary addToCart" data-branchid="@branch.Key.Id">
                                             Купить
                                         </div>
                                     </div>
@@ -191,5 +191,40 @@
         let prevIndex = 0 == currentIndex ? photos.length - 1 : currentIndex - 1;
         mainPhotoBlock.css('background-image', `url('${photos[prevIndex].value}')`);
         mainPhotoBlock.data('index', `${prevIndex}`);
+    })
+
+    $('.addToCart').on('click', function () {
+        let productId = $('#Id').val();
+        let branchId = $(this).data('branchid');
+        let branchBlock = $($(this).closest('.branch-block')[0]);
+        
+        let productCount = branchBlock.find('.product-count');
+        try {
+            let count = Number.parseInt(productCount.val());
+            if (!Number.isInteger(count)) {
+                alert("Укажите число!");
+                return;
+            }
+            $.ajax({
+                url: `/cart/ProductCount?productId=${productId}&branchId=${branchId}`,
+                statusCode: {
+                    200: function (data) {
+                        if (data < count) { alert('На складе отсутсвует указанное кол-во.'); return; }
+                        $.ajax({
+                            url: `/cart/add?productId=${productId}&branchId=${branchId}&count=${count}`,
+                            statusCode: {
+                                200: function (data) {
+                                    window.location = '/cart/myCart'
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        }
+        catch {
+
+        }
+        
     })
 </script>

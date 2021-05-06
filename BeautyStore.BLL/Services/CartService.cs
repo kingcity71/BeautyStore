@@ -16,41 +16,98 @@ namespace BeautyStore.BLL.Services
         private readonly ICartRepository _cartRepository;
         private readonly IStoreRepository _storeRepository;
         private readonly IProductService _productService;
+        private readonly IBaseRepository<CartProduct> _cartProductRepo;
+        private readonly IBaseRepository<Branch> _branchRepository;
         private readonly IMapper _mapper;
 
-        public CartService(ICartRepository cartRepository, IStoreRepository storeRepository, IProductService productService, IMapper mapper)
+        public CartService(ICartRepository cartRepository, IStoreRepository storeRepository, 
+            IProductService productService, 
+            IBaseRepository<CartProduct> cartProductRepo,
+            IBaseRepository<Branch> branchRepository,
+            IMapper mapper)
         {
             _cartRepository = cartRepository;
             _storeRepository = storeRepository;
             _productService = productService;
+            _cartProductRepo = cartProductRepo;
+            _branchRepository = branchRepository;
             _mapper = mapper;
         }
-
-
+        public async Task CartProductTrash(Guid cartId, Guid productId)
+        {
+            var item = await _cartProductRepo.GetItem(x => x.ProductId == productId && x.CartId == cartId);
+            await _cartProductRepo.Delete(item.Id);
+        }
+        public async Task CartPlus(Guid cartId, Guid productId)
+        {
+            var item = await _cartProductRepo.GetItem(x => x.ProductId == productId && x.CartId == cartId);
+            item.Count++;
+            await _cartProductRepo.Update(item);
+        }
+        public async Task CartMinus(Guid cartId, Guid productId)
+        {
+            var item = await _cartProductRepo.GetItem(x => x.ProductId == productId && x.CartId == cartId);
+            item.Count--;
+            await _cartProductRepo.Update(item);
+        }
         public async Task<IEnumerable<CartModel>> GetUserCart(Guid userId)
         {
-            var entites = await _cartRepository.GetItemsByUserId(userId);
+            var carts = await _cartRepository.GetMany(x=>x.UserId == userId && x.Status != Entities.Enum.BasketStatus.Paid);
+            var cartProducts = carts != null ? await _cartProductRepo.GetMany(x => carts.Select(x => x.Id).ToList().Contains(x.CartId)) : null;
             var models = Activator.CreateInstance<List<CartModel>>();
-            foreach(var entity in entites)
+            
+            foreach(var cart in carts)
             {
-                var model = _mapper.Map<Cart, CartModel>(entity);
-                //model.Product = await _productService.GetItem(entity.ProductId);
-                models.Add(model);
+                var cartModel = new CartModel();
+                var branch = await _branchRepository.GetItem(x => x.Id == cart.BranchId);
+                
+                cartModel.BranchId = branch.Id;
+                cartModel.BranchTitle = $"{branch.Name} ({branch.Address})";
+                cartModel.Id = cart.Id;
+                cartModel.Status = (BasketStatus)((int)cart.Status);
+                cartModel.ProductCounts = new Dictionary<ProductModel, int>();
+                foreach(var cartProduct in cartProducts.Where(x=>x.CartId == cart.Id))
+                {
+                    var productModel = await _productService.GetItem(cartProduct.ProductId);
+                    cartModel.ProductCounts.Add(productModel, cartProduct.Count);
+                }
+                models.Add(cartModel);
             }
+            
             return models;
         }
 
-        public async Task Hold(Guid productiId, Guid userId)
+        public async Task Hold(Guid productiId, Guid userId, Guid branchId, int count)
         {
-            var model = new CartModel()
+            var cart = await _cartRepository.GetItem(x => x.Status != Entities.Enum.BasketStatus.Paid && x.BranchId == branchId);
+            if(cart == null)
             {
-                Id = Guid.NewGuid(),
-                ProductId = productiId,
-                UserId = userId,
-                Status = BasketStatus.Hold
-            };
-            var entity = _mapper.Map<CartModel, Cart>(model);
-            await _cartRepository.Create(entity);
+                cart = new Cart
+                {
+                    BranchId = branchId,
+                    Status = Entities.Enum.BasketStatus.Hold,
+                    UserId = userId
+                };
+                cart = await _cartRepository.Create(cart);
+            }
+
+            var cartProduct = await _cartProductRepo.GetItem(x => x.CartId == cart.Id && x.ProductId == productiId);
+
+            if(cartProduct == null)
+            {
+                cartProduct = new CartProduct
+                {
+                    CartId = cart.Id,
+                    Count = count,
+                    ProductId = productiId
+                };
+                cartProduct = await _cartProductRepo.Create(cartProduct);
+            }
+            else
+            {
+                cartProduct.Count += count;
+                await _cartProductRepo.Update(cartProduct);
+            }
         }
 
         public async Task Remove(Guid cartId)
@@ -69,5 +126,11 @@ namespace BeautyStore.BLL.Services
             //storeEntity.Count -= 1;
             //await _storeRepository.Update(storeEntity);
         }
+
+        public async Task<int> GetProductCount(Guid productId, Guid branchId)
+        {
+            var storeItem = await _storeRepository.GetItem(x => x.ProductId == productId && x.BranchId == branchId);
+            return storeItem != null ? storeItem.Count : 0;
+        }    
     }
 }

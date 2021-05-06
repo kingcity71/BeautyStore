@@ -36,8 +36,10 @@ namespace BeautyStore.App
 
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>();
+
             services.AddAppServices();
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddControllersWithViews()
+                .AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

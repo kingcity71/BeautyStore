@@ -11,7 +11,7 @@ namespace BeautyStore.Interfaces.Repositories
         Task<IEnumerable<T>> GetAllItems();
         Task<T> GetItem(Guid id);
         Task<T> GetItem(Expression<Func<T, bool>> expression);
-        Task Create(T item);
+        Task<T> Create(T item);
         Task Update(T item);
         Task Delete(Guid id);
     }

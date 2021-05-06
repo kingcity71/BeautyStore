@@ -31,11 +31,38 @@ namespace BeautyStore.App.Controllers
             => await _cartService.Remove(cartId);
 
         [HttpGet]
-        public async Task<IActionResult> Add(Guid productId)
+        public async Task CartPlus(Guid cartId, Guid productId)
+            => await _cartService.CartPlus(cartId, productId);
+        [HttpGet]
+        public async Task CartMinus(Guid cartId, Guid productId)
+            => await _cartService.CartPlus(cartId, productId);
+        public async Task CartProductTrash(Guid cartId, Guid productId)
+            => await _cartService.CartProductTrash(cartId, productId); 
+
+        [HttpGet]
+        public async Task<int> ProductCount(Guid productId, Guid branchId)
+            => await _cartService.GetProductCount(productId, branchId);
+
+        //[HttpGet]
+        //public async Task AddToCart(Guid productId, Guid branchId, int count)
+        //{
+        //    var user = await _userService.GetUser(GetCurrentUser());
+        //    await _cartService.Hold(productId, user.Id, branchId);
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> Add(Guid productId, Guid branchId, int count)
         {
             var user = await _userService.GetUser(GetCurrentUser());
-            await _cartService.Hold(productId,user.Id);
-            return RedirectToAction("MyCart");
+            try
+            {
+                await _cartService.Hold(productId, user.Id, branchId, count);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            return Ok();
         }
         [HttpGet]
         public async Task<bool> IsPaymentPossible(Guid productId)
