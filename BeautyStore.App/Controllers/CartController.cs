@@ -35,7 +35,7 @@ namespace BeautyStore.App.Controllers
             => await _cartService.CartPlus(cartId, productId);
         [HttpGet]
         public async Task CartMinus(Guid cartId, Guid productId)
-            => await _cartService.CartPlus(cartId, productId);
+            => await _cartService.CartMinus(cartId, productId);
         public async Task CartProductTrash(Guid cartId, Guid productId)
             => await _cartService.CartProductTrash(cartId, productId); 
 
