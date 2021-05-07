@@ -94,7 +94,7 @@
         <div class="row justify-content-center align-items-center h-100">
             @foreach (var product in Model.Products)
             {
-                <div class="col col-sm-4 col-md-3 col-lg-2 col-xl-2">
+                <div class="col col-sm-4 col-md-3 col-lg-2 col-xl-2" style="margin-bottom:15px">
                     @{
                         var isPhotoExist = product.Photos.Any();
                         var base64 = isPhotoExist ?

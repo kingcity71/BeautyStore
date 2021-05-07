@@ -16,25 +16,38 @@ namespace BeautyStore.App.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IStoreService _storeService;
         private readonly IBaseRepository<Branch> _branchRepo;
+        private readonly IUserService _userService;
 
         public ProductController(IProductService productService,
             ICategoryService categoryService,
             IStoreService storeService,
-            IBaseRepository<Branch> branchRepo)
+            IBaseRepository<Branch> branchRepo, IUserService userService)
         {
             _productService = productService;
             _categoryService = categoryService;
             _storeService = storeService;
             _branchRepo = branchRepo;
+            _userService = userService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Item(Guid id)
         {
-            var product = await _productService.GetItem(id, includeStoreInfo: true);
+            ViewData["UserId"] = (await _userService.GetUser(User.Identity.Name))?.Id;
+            var product = await _productService.GetItem(id, includeStoreInfo: true, includeReview: true);
             return View(product);
         }
-
+        [HttpGet]
+        public async Task CreateReview(Guid productId, string comment, int stars)
+        {
+            var userId = (await _userService.GetUser(User.Identity.Name)).Id;
+            await _productService.CreateReview(userId, productId, comment, stars);
+        }
+        [HttpGet]
+        public async Task DeleteReview(Guid reviewId)
+        {
+            await _productService.DeleteReview(reviewId);
+        }
         [HttpGet]
         public async Task<IActionResult> Edit(Guid? id)
         {

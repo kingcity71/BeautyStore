@@ -33,7 +33,9 @@ namespace BeautyStore.BLL.Services
 
         public async Task<UserModel> GetUser(string email)
         {
+            if (string.IsNullOrEmpty(email)) return null;
             var entity = await _userRepo.GetItem(email);
+            if (entity == null) return null;
             var model = _mapper.Map<User, UserModel>(entity);
             return model;
         }

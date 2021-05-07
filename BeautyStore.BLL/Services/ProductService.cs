@@ -14,19 +14,23 @@ namespace BeautyStore.BLL.Services
     {
         private readonly IBaseRepository<Product> _productRepo;
         private readonly IBaseRepository<Branch> _branchRepo;
+        private readonly IBaseRepository<Review> _reviewRepo;
         private readonly IProductPhotoRepository _productPhotoRepo;
         private readonly IPhotoRepository _photoRepo;
         private readonly ICategoryService _categoryService;
         private readonly IStoreService _storeService;
+        private readonly IUserService _userService;
+
         private readonly IMapper _mapper;
 
         public ProductService(IBaseRepository<Product> productRepo,
             IProductPhotoRepository productPhotoRepo,
             IPhotoRepository photoRepo,
             ICategoryService categoryService,
-            IMapper mapper, 
+            IMapper mapper,
             IStoreService storeService,
-            IBaseRepository<Branch> branchRepo)
+            IUserService userService,
+            IBaseRepository<Branch> branchRepo, IBaseRepository<Review> reviewRepo)
         {
             _productRepo = productRepo;
             _productPhotoRepo = productPhotoRepo;
@@ -35,7 +39,12 @@ namespace BeautyStore.BLL.Services
             _mapper = mapper;
             _branchRepo = branchRepo;
             _storeService = storeService;
+            _reviewRepo = reviewRepo;
+            _userService = userService;
         }
+        public async Task DeleteReview(Guid reviewId)
+            => await _reviewRepo.Delete(reviewId);
+
         public async Task<ProductModel> Create(ProductModel productModel)
         {
             productModel.Id = Guid.NewGuid();
@@ -60,7 +69,17 @@ namespace BeautyStore.BLL.Services
 
             return productModel;
         }
-
+        public async Task CreateReview(Guid userId, Guid productId, string comment, int stars)
+        {
+            var entity = new Review
+            {
+                Comment = comment,
+                ProductId = productId,
+                UserId = userId,
+                Stars = stars
+            };
+            await _reviewRepo.Create(entity);
+        }
         public async Task Delete(Guid id)
         {
             var productPhotos = await _productPhotoRepo.GetItemsByProductId(id);
@@ -71,7 +90,7 @@ namespace BeautyStore.BLL.Services
             await _productRepo.Delete(id);
         }
 
-        public async Task<ProductModel> GetItem(Guid id, bool onlyCoverPhoto = false, bool includeStoreInfo = false)
+        public async Task<ProductModel> GetItem(Guid id, bool onlyCoverPhoto = false, bool includeStoreInfo = false, bool includeReview = false)
         {
             var productEntity = await _productRepo.GetItem(id);
             var productModel = _mapper.Map<Product, ProductModel>(productEntity);
@@ -96,6 +115,23 @@ namespace BeautyStore.BLL.Services
                     productModel.BranchCounts.Add(branch, balance);
                 }
             }
+
+            if (includeReview)
+            {
+                var reviews = await _reviewRepo.GetMany(x => x.ProductId == id);
+                foreach(var review in reviews)
+                {
+                    var reviewModel = new ReviewModel
+                    {
+                        Id = review.Id,
+                        Stars = review.Stars,
+                        Comment = review.Comment,
+                        User = await _userService.GetUser(review.UserId)
+                    };
+                    productModel.Reviews.Add(reviewModel);
+                }
+            }
+
             return productModel;
         }
 

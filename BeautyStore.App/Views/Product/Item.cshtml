@@ -2,8 +2,20 @@
 
 @{
     var mainPhoto = Model.Photos.Any() ? Model.Photos[0].Base64 : string.Empty;
+    var userId = ViewData["UserId"] != null ? Guid.Parse(ViewData["UserId"].ToString()) : Guid.Empty;
 }
 <style>
+    .hover:hover {
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+
+    .bordered {
+        margin: 5px 0;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+    }
+
     .info-block {
         width: calc(100% - 300px);
     }
@@ -94,61 +106,158 @@
                             Поставка
                         </div>
                     }
-                    else
-                    {
-                        @*<div class="btn btn-primary button cartButton">
-                            В корзину
-                        </div>*@
-                    }
                 }
-
                 <div class="info-block">
-                    <h3 class="text-center">
-                        @Model.Title, @Model.Price Rub
-                    </h3>
                     <h6 class="text-center">
                         Категория: @Model.Category.Title
                     </h6>
-                    <div class="col-12">
+                    <div class="row bordered">
+                        <h6 class="col-8 text-right text-break">
+                            @Model.Title
+                        </h6>
+                        <div class="col-2" style="font-size:23px">
+                            @Model.Price₽
+                        </div>
+                        <div class="col-2 text-left" style="font-size:23px">
+                            @if (Model.Reviews.Any())
+                            {
+                                @( Math.Round((double)Model.Reviews.Sum(x=>x.Stars) / Model.Reviews.Count, 2) )
+                                <span class="glyphicon glyphicon-star-empty" style="color:orange" aria-hidden="true"></span>
+                            }
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 bordered text-left" style="font-size:13px">
                         @Model.Description
                     </div>
-                </div>
-            </div>
-            @if (User.IsInRole("User"))
-            {
-                <div class="row" style="margin-top:30px; border-top:1px solid gray">
-                    <div class="text-center col-12">Наличие в филиалах</div>
-                    @if (Model.BranchCounts.Count(x => x.Value != 0) == 0)
+
+                    @if (User.IsInRole("User"))
                     {
-                        <div class="col-12">
-                            <div class=" text-center">
-                                Нет в наличии.
-                                <a>Сообщить о поступлении?</a>
+                        <div class="row" style="margin-top:30px;">
+                            <div class="col-12 text-right font-weight-bold" style="color:dimgrey; font-size:19px">
+                                Наличие в филиалах
                             </div>
+                            @if (Model.BranchCounts.Count(x => x.Value != 0) == 0)
+                            {
+                                <div class="col-12 bordered">
+                                    <div class="text-center">
+                                        Нет в наличии.
+                                        <a>Сообщить о поступлении?</a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-12 bordered">
+                                    @foreach (var branch in Model.BranchCounts)
+                                    {
+                                        <div class="row branch-block">
+                                            <div class="col-8 text-right" style="font-size:13px">
+                                                @($"{branch.Key.Name} ({branch.Key.Address})")
+                                            </div>
+
+                                            <div class="col-2 text-center">
+                                                <span class="glyphicon glyphicon-plus hover fontSizeRise productPlus"
+                                                      style="color:green" aria-hidden="true"
+                                                      data-product="@Model.Id" data-branch="@branch.Key.Id"></span>
+                                                <span class="product-count">0</span>
+                                                <span class="glyphicon glyphicon-minus red hover productMinus" style="color:red" aria-hidden="true"></span>
+                                            </div>
+
+                                            <div class="col-2">
+                                                <span class="hover addToCart glyphicon glyphicon-shopping-cart" style="color:cornflowerblue" aria-hidden="true" data-branchid="@branch.Key.Id"></span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                    @if (User.IsInRole("User") && !Model.Reviews.Any(x => x.User.Id == userId))
+                    {
+                        <div class="row">
+                            <div class="col-12 text-right font-weight-bold" style="color: dimgrey; font-size: 19px">
+                                Написать отзыв
+                            </div>
+                        </div>
+                        <div class="row bordered" style="padding:10px">
+                            <div class="col-10">
+                                <textarea class="form-control" placeholder="Описание" id="comment" style="height:90px"></textarea>
+                            </div>
+                            <div class="col-1">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <span class="glyphicon glyphicon-menu-up hover" style="color:gray; font-size:20px" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-12 text-center" style="margin-bottom:2px; font-size:20px">
+                                        <span id="starsCount">5</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <span class="glyphicon glyphicon-menu-down hover" style="color:gray; font-size:20px" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-1" style="padding-top:20px">
+                                <span class="glyphicon glyphicon-send hover" style="color:gray; font-size:30px" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!Model.Reviews.Any())
+                    {
+                        <div class="text-center bordered">
+                            Отзывов на товар нет
                         </div>
                     }
                     else
                     {
-                        @foreach (var branch in Model.BranchCounts)
-                        {
-                            <div class="col-12" style="margin-bottom:5px; margin-top:5px">
-                                <div class="row branch-block">
-                                    <div class="col-6">@($"{branch.Key.Name} ({branch.Key.Address})")</div>
-                                    <div class="col-4">
-                                        <input placeholder="Количество" class="form-control product-count" />
-                                    </div>
-                                    <div class="col-2">
-                                        <div class="btn btn-primary addToCart" data-branchid="@branch.Key.Id">
-                                            Купить
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="row">
+                            <div class="col-12 text-right font-weight-bold" style="color: dimgrey; font-size: 19px">
+                                Отзывы
                             </div>
-                        }
+                        </div>
+                    }
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="row">
+                            <div class="col-12 text-right" style="font-size:13px;">
+                                @review.User.FullName
+                            </div>
+                        </div>
+                        <div class="row bordered">
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="col-9 text-center font-italic" style="font-size:17px;">
+                                    @review.Comment
+                                </div>
+                                <div class="col-2 text-right">
+                                    @review.Stars
+                                    <span class="glyphicon glyphicon-star-empty" style="color:orange" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-1 text-right">
+                                    <span class="glyphicon glyphicon-trash hover" data-review="@review.Id" style="color:red" aria-hidden="true"></span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-10 text-center font-italic" style="font-size:17px;">
+                                    @review.Comment
+                                </div>
+                                <div class="col-2 text-right">
+                                    @review.Stars
+                                    <span class="glyphicon glyphicon-star-empty" style="color:orange" aria-hidden="true"></span>
+                                </div>
+                            }
+                        </div>
                     }
 
                 </div>
-            }
+            </div>
+
         </div>
     </div>
 </div>
@@ -156,7 +265,75 @@
 {
     <div class="photo-hidden" data-index="@photo.Key" data-value="@photo.Value.Base64" hidden></div>
 }
+<script>
+    $('.glyphicon-trash').on('click', function () {
+        if (!confirm('Уверены?')) return;
+        let reviewId = $(this).data('review');
+        $.ajax({
+            url: '/product/DeleteReview?reviewId=' + reviewId,
+            statusCode: {
+                200: function () {
+                    location.reload();
+                }
+            }
+        })
+    })
+    $('.glyphicon-send').on('click', function () {
+        debugger;
+        let productId = $('#Id').val();
+        let comment = $('#comment').val()
+        let stars = Number.parseInt($('#starsCount').text());
 
+        $.ajax({
+            url: `/product/CreateReview?productId=${productId}&comment=${comment}&stars=${stars}`,
+            statusCode: {
+                200: function(){
+                    location.reload();
+                }
+            }
+        })
+    })
+
+    $('.glyphicon-menu-up').on('click', function () {
+        let starCountStr = $('#starsCount').text();
+        let starCount = Number.parseInt(starCountStr);
+        if (starCount<5)
+            $('#starsCount').text(starCount+1)
+    })
+
+    $('.glyphicon-menu-down').on('click', function () {
+        let starCountStr = $('#starsCount').text();
+        let starCount = Number.parseInt(starCountStr);
+        if (starCount > 1)
+            $('#starsCount').text(starCount - 1)
+    })
+</script>
+<script>
+    $('.productMinus').on('click', function () {
+        let countBlock = $(this).prev();
+        let count = Number.parseInt(countBlock.text());
+        if (count == 0) return;
+        count--;
+        countBlock.text(count);
+    })
+    $('.productPlus').on('click', function () {
+        let productId = $(this).data('product');
+        let branchId = $(this).data('branch');
+        let countBlock = $(this).next();
+        let count = Number.parseInt(countBlock.text());
+
+        $.ajax({
+            url: `/cart/ProductCount?productId=${productId}&branchId=${branchId}`,
+            statusCode: {
+                200: function (data) {
+                    if (data < count + 1) { alert('На складе отсутсвует указанное кол-во.'); return; }
+                    count++;
+                    countBlock.text(count);
+                }
+            }
+        })
+    })
+</script>
 <script>
 
     $('.editButton').on('click', () => window.location.href = `/product/edit/${$('#Id').val()}`);
@@ -197,14 +374,10 @@
         let productId = $('#Id').val();
         let branchId = $(this).data('branchid');
         let branchBlock = $($(this).closest('.branch-block')[0]);
-        
-        let productCount = branchBlock.find('.product-count');
+        let prodCountStr = branchBlock.find('.product-count').text();
+        let count = Number.parseInt(prodCountStr);
         try {
-            let count = Number.parseInt(productCount.val());
-            if (!Number.isInteger(count)) {
-                alert("Укажите число!");
-                return;
-            }
+
             $.ajax({
                 url: `/cart/ProductCount?productId=${productId}&branchId=${branchId}`,
                 statusCode: {
@@ -225,6 +398,6 @@
         catch {
 
         }
-        
+
     })
 </script>

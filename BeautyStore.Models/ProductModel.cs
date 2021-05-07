@@ -11,5 +11,6 @@ namespace BeautyStore.Models
         public decimal Price { get; set; }
         public string Title { get; set; }
         public Dictionary<BranchModel, int> BranchCounts{ get; set; }
+        public IList<ReviewModel> Reviews { get; set; } = new List<ReviewModel>();
     }
 }

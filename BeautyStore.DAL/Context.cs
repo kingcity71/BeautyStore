@@ -13,6 +13,7 @@ namespace BeautyStore.DAL
             _connectionString = configuration.GetConnectionString(SQL_CONNECTION_CONFIG_NAME);
         }
 
+        public DbSet<Review>Reviews{ get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Message> Messages { get; set; }
