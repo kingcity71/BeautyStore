@@ -48,6 +48,12 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Chatting" asp-action="Conversation" asp-route-interlocutorLogin="@ADMIN_ROLE">Поддержка</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Subscribe" asp-action="Index">Подписки</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Order" asp-action="Index">История заказов</a>
+                                </li>
                             }
                             <li class="nav-item">
                                 <span class="nav-link text-dark font-weight-bold">@User.Identity.Name</span>

@@ -1,7 +1,9 @@
-﻿@{
+﻿@model BeautyStore.Models.CartModel;
+@{
     Layout = null;
     var ADMIN_ROLE = "Admin";
     var USER_ROLE = "User";
+    var sum = Model.ProductCounts.Sum(y => y.Key.Price * y.Value);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -73,7 +75,7 @@
     <div class="container">
         <div class="payment-title">
             <h1>Страницы оплаты</h1>
-            <h3>313 руб.</h3>
+            <h3>@sum руб.</h3>
         </div>
         <div class="container-payment preload">
             <div class="creditcard">
@@ -245,7 +247,7 @@
         </div>
         <div class="row">
             <div class="col-5"></div>
-            <div class="col-2 btn btn-success w-100">Оплатить</div>
+            <div class="col-2 btn btn-success w-100" id="payBtn">Оплатить</div>
             <div class="col-5"></div>
         </div>
     </div>
@@ -262,6 +264,21 @@
     </footer>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $('#payBtn').on('click', function () {
+            $.ajax({
+                url: '/cart/pay?cartId=@Model.Id',
+                statusCode: {
+                    200: function() {
+                        alert('Успешно!');
+                        location.href='/'
+                    }
+                }
+            })
+        })
+    </script>
+
 </body>
 </html>
 

@@ -34,20 +34,21 @@
             width: 100px;
         }
 
-        .scope-info{
-            border:1px solid gray;
-            border-radius:3px;
-            margin-top:15px;
-        }
+    .scope-info {
+        border: 1px solid gray;
+        border-radius: 3px;
+        margin-top: 15px;
+    }
 </style>
 <div class="container-fluid h-100">
     <div class="row justify-content-center align-items-center h-100">
         <div class="col col-sm-10 col-md-10 col-lg-10 col-xl-10">
             <h3 class="text-center">Корзина</h3>
-            @if (Model.Any())
+            @if (Model.Any() && Model.Count(x => x.ProductCounts.Any()) != 0)
             {
                 @foreach (var cart in Model)
                 {
+                    @if (!cart.ProductCounts.Any()) continue;
                     <div class="container scope-info">
                         <div class="row ">
                             <div class="col-12 text-center branch-info" data-id="@cart.BranchId">
@@ -73,14 +74,14 @@
 
                         }
                     </div>
-                    
+
                     <div class="row" style="margin-top:10px;">
                         <div class="col-4"></div>
                         <div class="col-4">
                             <div class="text-right k-oplate">К оплате : @cart.ProductCounts.Sum(y => y.Key.Price * y.Value)</div>
                         </div>
                         <div class="col-4">
-                            <div class="btn btn-success w-100">Оплатить</div>
+                            <div class="btn btn-success w-100 payCart" data-id="@cart.Id">Оплатить</div>
                         </div>
                     </div>
                 }
@@ -88,18 +89,44 @@
             }
             else
             {
-                <h4>Товаров в корзине нет</h4>
+                <h4 class="text-center">Товаров в корзине нет</h4>
             }
         </div>
     </div>
 </div>
+
+<script>
+    $('.payCart').on('click', function () {
+        let cartId = $(this).data('id');
+        $.ajax({
+            url: `/cart/ChechAvailable?cartId=${cartId}`,
+            statusCode: {
+                200: function (data) {
+                    let count = 0;
+                    let str = 'Следующие товары доступны в указанном количестве : \n';
+                    for (var item in data) {
+                        str = str + item + ', шт.=' + data[item] + '\n';
+                        count++;
+                    }
+                    
+                    if (count!==0) 
+                        alert(str);
+                    else
+                        location.href = '\Payment?cartId=' + cartId
+            }
+        }
+        })
+    $
+    })
+</script>
+
 <script>
     let reBalance = function (scope) {
         let sum = 0;
         var products = scope.find('.product-info');
         for (var product of products) {
             let priceStr = $(product).data('price').replace(",", ".");
-            let price = Number.parseFloat(priceStr);    
+            let price = Number.parseFloat(priceStr);
             let count = Number.parseInt($(product).find('.product-count').text());
             sum += (count * price);
         }
@@ -148,7 +175,7 @@
                         statusCode: {
                             200: function (data) {
                                 count++;
-                                countBlock.text(count);  
+                                countBlock.text(count);
                                 kOplate.text(`К оплате : ${reBalance(scope)}`);
                             }
                         }
@@ -156,7 +183,7 @@
                 }
             }
         })
-        
+
     })
     $('.productTrash').on('click', function () {
         if (!confirm("Вы уверены?")) return;
@@ -171,15 +198,13 @@
             url: `/cart/CartProductTrash?cartId=${cartId}&productId=${productId}`,
             statusCode: {
                 200: function (data) {
-                    parent.remove();
-                    kOplate.text(`К оплате : ${reBalance(scope)}`);
+                    location.reload();
                 }
             }
         })
     })
 
 </script>
-
 
 <script>
     $('.payBtn').on('click', function (context) {

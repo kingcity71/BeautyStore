@@ -1,0 +1,98 @@
+﻿@model IEnumerable<BeautyStore.Models.CartModel> ;
+
+<div class="container">
+    @if (!Model.Any())
+    {
+        <h2 class="text-center">
+            История заказов пуста
+        </h2>
+    }
+    else
+    {
+        <style>
+            .hover:hover {
+                cursor: pointer;
+            }
+
+            .fontSizeRise:hover {
+                font-size: 1.1rem;
+            }
+
+            .cart-line {
+                height: 50px;
+                border-bottom: 1px solid gray;
+                margin-bottom: 3px;
+            }
+
+
+
+            .cart-title {
+                width: calc(100% - 300px);
+            }
+
+            .buttons {
+                position: absolute;
+                right: 0px;
+            }
+
+                .buttons button,
+                .buttons div {
+                    width: 100px;
+                }
+
+            .scope-info {
+                border: 1px solid gray;
+                border-radius: 3px;
+                margin-top: 15px;
+            }
+        </style>
+        <div class="container-fluid h-100">
+            <div class="row justify-content-center align-items-center h-100">
+                <div class="col col-sm-10 col-md-10 col-lg-10 col-xl-10">
+                    <h3 class="text-center">История заказов</h3>
+                    @if (Model.Any() && Model.Count(x => x.ProductCounts.Any()) != 0)
+                    {
+                        @foreach (var cart in Model)
+                        {
+                            @if (!cart.ProductCounts.Any()) continue;
+                            <div class="container scope-info">
+                                <div class="row ">
+                                    <div class="col-12 text-center branch-info" data-id="@cart.BranchId">
+                                        <h6> @cart.BranchTitle </h6>
+                                    </div>
+                                </div>
+                                @foreach (var product in cart.ProductCounts)
+                                {
+                                    <div class="row product-info" data-price="@product.Key.Price" data-id="@product.Key.Id" data-branch="@cart.BranchId" data-cart="@cart.Id">
+                                        <div class="col-9">
+                                            @product.Key.Title (@product.Key.Price Руб/Шт)
+                                        </div>
+                                        <div class="col-2 text-center">
+                                    
+                                            <span class="product-count">Кол-во : @product.Value</span>
+                                    
+                                        </div>
+                                    </div>
+
+
+                                }
+                            </div>
+
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col-4"></div>
+                                <div class="col-4">
+                                    <div class="text-right k-oplate">Оплачено : @cart.ProductCounts.Sum(y => y.Key.Price * y.Value)</div>
+                                </div>
+                                <div class="col-4">
+                                    
+                                </div>
+                            </div>
+                        }
+
+                    }
+                </div>
+            </div>
+        </div>
+
+    }
+</div>

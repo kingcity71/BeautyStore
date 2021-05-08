@@ -1,0 +1,35 @@
+﻿@model List<BeautyStore.Models.ProductModel>;
+
+<div class="container">
+    @if (!Model.Any())
+    {
+        <h1>Подписок нет</h1>
+    }
+
+    @foreach (var product in Model)
+    {
+        <div class="row">
+            <div class="col-9">
+                @product.Title
+            </div>
+            <div class="col-3">
+                <div class="btn btn-danger unsub" data-id="@product.Id">
+                    Отписаться
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    $('.unsub').on('click', function () {
+        if (!confirm('Уверены?')) return;
+        let productId = $(this).data('id');
+        $.ajax({
+            url: '/subscribe/Unsubscribe?productId=' + productId,
+            statusCode: {
+                200:() => location.reload()
+            }
+        })
+    })
+</script>

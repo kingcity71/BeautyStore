@@ -1,7 +1,10 @@
 ﻿using BeautyStore.Interfaces.Services;
+using BeautyStore.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BeautyStore.App.Controllers
@@ -19,8 +22,19 @@ namespace BeautyStore.App.Controllers
         }
 
         [HttpGet]
-        public IActionResult Payment()
-            => View();
+        public async Task<Dictionary<string, int>> ChechAvailable(Guid cartId)
+        {
+            var check = await _cartService.ChechAvailable(cartId);
+            return check;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Payment(Guid cartId)
+        {
+            var user = await _userService.GetUser(GetCurrentUser());
+            var carts = await _cartService.GetUserCart(user.Id);
+            return View(carts.First(x => x.Id == cartId));
+        }
 
         [HttpGet]
         public async Task Pay(Guid cartId)

@@ -143,7 +143,7 @@
                                 <div class="col-12 bordered">
                                     <div class="text-center">
                                         Нет в наличии.
-                                        <a>Сообщить о поступлении?</a>
+                                        <a style="text-decoration:underline" class="hover" id="subscribe">Сообщить о поступлении?</a>
                                     </div>
                                 </div>
                             }
@@ -266,6 +266,17 @@
     <div class="photo-hidden" data-index="@photo.Key" data-value="@photo.Value.Base64" hidden></div>
 }
 <script>
+    $('#subscribe').on('click', function () {
+        let productId = $('#Id').val();
+        $.ajax({
+            url: '/subscribe/Subscribe?productId=' + productId,
+            statusCode: {
+                200: function() {
+                    alert('Вы подписаны на уведомление на почту о поставке!');
+                }
+            }
+        })
+    })
     $('.glyphicon-trash').on('click', function () {
         if (!confirm('Уверены?')) return;
         let reviewId = $(this).data('review');
@@ -279,7 +290,6 @@
         })
     })
     $('.glyphicon-send').on('click', function () {
-        debugger;
         let productId = $('#Id').val();
         let comment = $('#comment').val()
         let stars = Number.parseInt($('#starsCount').text());

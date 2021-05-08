@@ -20,7 +20,7 @@ namespace BeautyStore.BLL.Services
         private readonly ICategoryService _categoryService;
         private readonly IStoreService _storeService;
         private readonly IUserService _userService;
-
+        private readonly IBaseRepository<ProductNotifications> _pnRepo;
         private readonly IMapper _mapper;
 
         public ProductService(IBaseRepository<Product> productRepo,
@@ -30,7 +30,7 @@ namespace BeautyStore.BLL.Services
             IMapper mapper,
             IStoreService storeService,
             IUserService userService,
-            IBaseRepository<Branch> branchRepo, IBaseRepository<Review> reviewRepo)
+            IBaseRepository<Branch> branchRepo, IBaseRepository<Review> reviewRepo, IBaseRepository<ProductNotifications> pnRepo = null)
         {
             _productRepo = productRepo;
             _productPhotoRepo = productPhotoRepo;
@@ -41,7 +41,37 @@ namespace BeautyStore.BLL.Services
             _storeService = storeService;
             _reviewRepo = reviewRepo;
             _userService = userService;
+            _pnRepo = pnRepo;
         }
+
+        public async Task Subscribe(Guid userId, Guid productId)
+        {
+            var notiif = await _pnRepo.GetItem(x => x.ProductId == productId && x.UserId == userId);
+            if (notiif != null) return;
+            await _pnRepo.Create(new ProductNotifications { ProductId = productId, UserId = userId });
+        }
+            
+
+        public async Task<List<ProductModel>> Subscribes(Guid userId)
+        {
+            var notifs = await _pnRepo.GetMany(x => x.UserId == userId);
+            var result = new List<ProductModel>();
+            foreach (var notif in notifs)
+            {
+                var prod = await GetItem(notif.ProductId);
+                result.Add(prod);
+
+            }
+            return result;
+        }
+            
+        public async Task Unsubscribe(Guid userId, Guid prodId)
+        {
+            var notif = await _pnRepo.GetItem(x => x.ProductId == prodId && userId == x.UserId);
+            await  _pnRepo.Delete(notif.Id);
+        }
+
+
         public async Task DeleteReview(Guid reviewId)
             => await _reviewRepo.Delete(reviewId);
 
